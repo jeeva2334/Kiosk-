@@ -7,7 +7,7 @@ const cors = require('cors');
 const { addMenu, getMenu, deleteMenu, updateMenu, getSingleMenu } = require('./Controller/Menu.controller');
 
 
-mongoose.connect('mongodb://127.0.0.1:27017', { useNewUrlParser: true }).then(() => c('MongoDB connected')).catch(err => c(err));
+mongoose.connect('mongodb+srv://jeeva:jeeva@cluster0.xhyevf2.mongodb.net/test', { useNewUrlParser: true }).then(() => c('MongoDB connected')).catch(err => c(err));
 
 app.use(cors());
 app.use(bodyParser.json());
