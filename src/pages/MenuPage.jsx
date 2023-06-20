@@ -68,6 +68,7 @@ function MenuPage() {
     }, [Razorpay]);
     const [menu, setMenu] = useState([]);
     const { addItem, items, removeItem, updateItemQuantity, cartTotal, emptyCart } = useCart();
+    const [card,setCard] = useState(false)
 
     useEffect(() => {
         const fetchMenu = async () => {
@@ -89,6 +90,29 @@ function MenuPage() {
         return items.some((item) => item.id === itemId);
     };
 
+    const redirectToFlaskURL = async(pay) => {
+        setCard(true)
+        const body = {
+            items,
+            "total":pay
+        }
+        await fetch('http://localhost:5000/print', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            emptyCart()
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        }); 
+    };
+    
     return (
         <div className={`${menu.length !==0 ? "bg-black" : "h-screen bg-black"}`}>
         <div className="text-white p-4">
@@ -160,13 +184,23 @@ function MenuPage() {
                 ))}
                 </ul>
                 <div>Total: ₹{items.reduce((total, item) => total + item.price * item.quantity, 0)}</div>
-                <button
-                id="payButton"
-                className="py-3 text-xl font-bold hover:translate-x-3 transition-all ease-in-out duration-500 px-14 rounded-2xl bg-green-500 hover:cursor-pointer"
-                onClick={()=>handlePayment(cartTotal)}
-                >
-                Pay
-                </button>
+                <div className='flex-col flex'>
+                    <button
+                    id="payButton"
+                    className="py-3 mb-10 text-xl font-bold hover:translate-x-3 transition-all ease-in-out duration-500 px-14 rounded-2xl bg-green-500 hover:cursor-pointer"
+                    onClick={()=>handlePayment(cartTotal)}
+                    >
+                    Pay by gpay
+                    </button>
+                    <button
+                    id="payButton"
+                    className="py-3 text-xl font-bold hover:translate-x-3 transition-all ease-in-out duration-500 px-14 rounded-2xl bg-green-500 hover:cursor-pointer"
+                    onClick={()=>redirectToFlaskURL(cartTotal)}
+                    >
+                    Staff's Card
+                    </button>
+                    {card && <p className='text-2xl font-bold text-green-500'>Keep the card to pay</p>}
+                </div>
             </div>
             </div>
         </div>
